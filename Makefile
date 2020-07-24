@@ -26,3 +26,4 @@ test: vendor
 vendor:
 	@echo "--> Vendoring dependencies..."
 	@CGO_ENABLED=0 GO111MODULE=on go mod vendor
+

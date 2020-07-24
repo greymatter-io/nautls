@@ -24,6 +24,8 @@ import (
 )
 
 // ClientConfig provides a serializable representation of an http.Client structure.
+//
+// Deprecated: ClientConfig should no longer be used and implementations should move to Configuration.
 type ClientConfig struct {
 
 	// Host defines the hostname or address of the servert to which the client connects.

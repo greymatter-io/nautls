@@ -14,23 +14,24 @@
 
 package clients
 
-import "crypto/tls"
-
-// SecurityBuilder provides an builder for client tls.Config instances.
-//
-// Deprecated: SecurityBuilder should no longer be used and implementations should move to ConfigurationBuilder.
-type SecurityBuilder struct {
-	config SecurityConfig
+// ConfigurationBuilder provides an builder for client Configuration instances.
+type ConfigurationBuilder struct {
+	Configuration
 }
 
-// NewSecurityBuilder returns a new instance of the SecurityBuilder structure.
-func NewSecurityBuilder() *SecurityBuilder {
-	return &SecurityBuilder{}
+// NewConfigurationBuilder returns a new instance of the ConfigurationBuilder structure.
+func NewConfigurationBuilder() *ConfigurationBuilder {
+	return &ConfigurationBuilder{}
 }
 
-// Build creates a tls.Config from the SecurityBuilder.
-func (b *SecurityBuilder) Build() (*tls.Config, error) {
-	return b.config.Build()
+// Build returns a Configuration for the current state of the builder.
+func (b *ConfigurationBuilder) Build() *Configuration {
+	return &Configuration{
+		Authorities: b.Authorities,
+		Certificate: b.Certificate,
+		Key:         b.Key,
+		Server:      b.Server,
+	}
 }
 
 // WithAuthorities sets the certificate authorities trusted by the built tls.Config. The values must be URLs that point
@@ -39,8 +40,8 @@ func (b *SecurityBuilder) Build() (*tls.Config, error) {
 // Note that in addition to those schemes supported by [getter](https://godoc.org/github.com/hashicorp/go-getter) a
 // "base64" scheme is supported for providing the PEM encoded certifiate in the path of the URL directly. This is most
 // applicable when the certificate data must be provided via an environement variable.
-func (b *SecurityBuilder) WithAuthorities(authorities []string) *SecurityBuilder {
-	b.config.Authorities = authorities
+func (b *ConfigurationBuilder) WithAuthorities(authorities []string) *ConfigurationBuilder {
+	b.Authorities = authorities
 	return b
 }
 
@@ -50,8 +51,8 @@ func (b *SecurityBuilder) WithAuthorities(authorities []string) *SecurityBuilder
 // Note that in addition to those schemes supported by [getter](https://godoc.org/github.com/hashicorp/go-getter) a
 // "base64" scheme is supported for providing the PEM encoded certifiate in the path of the URL directly. This is most
 // applicable when the certificate data must be provided via an environement variable.
-func (b *SecurityBuilder) WithCertificate(certificate string) *SecurityBuilder {
-	b.config.Certificate = certificate
+func (b *ConfigurationBuilder) WithCertificate(certificate string) *ConfigurationBuilder {
+	b.Certificate = certificate
 	return b
 }
 
@@ -61,13 +62,13 @@ func (b *SecurityBuilder) WithCertificate(certificate string) *SecurityBuilder {
 // Note that in addition to those schemes supported by [getter](https://godoc.org/github.com/hashicorp/go-getter) a
 // "base64" scheme is supported for providing the PEM encoded certifiate in the path of the URL directly. This is most
 // applicable when the certificate data must be provided via an environement variable.
-func (b *SecurityBuilder) WithKey(key string) *SecurityBuilder {
-	b.config.Key = key
+func (b *ConfigurationBuilder) WithKey(key string) *ConfigurationBuilder {
+	b.Key = key
 	return b
 }
 
 // WithServer sets the server name used for certificate verification.
-func (b *SecurityBuilder) WithServer(server string) *SecurityBuilder {
-	b.config.Server = server
+func (b *ConfigurationBuilder) WithServer(server string) *ConfigurationBuilder {
+	b.Server = server
 	return b
 }
