@@ -17,6 +17,7 @@ package tests
 import (
 	"crypto/tls"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"testing"
 )
@@ -46,4 +47,20 @@ func MustLoadX509KeyPair(certificate string, key string, test *testing.T) tls.Ce
 		test.Errorf("error reading key pair [%s]", err)
 	}
 	return c
+}
+
+// MustRelativePath returns the relative path for the current working directory or fails the test.
+func MustRelativePath(absolute string, test *testing.T) string {
+
+	working, err := os.Getwd()
+	if err != nil {
+		test.Errorf("error getting current working directory [%s]", err)
+	}
+
+	relative, err := filepath.Rel(working, absolute)
+	if err != nil {
+		test.Errorf("error resolving relative path [%s]", err)
+	}
+
+	return relative
 }

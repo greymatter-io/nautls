@@ -19,7 +19,6 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
-	"net/url"
 
 	"github.com/greymatter-io/nautls/internal/urls"
 	"github.com/pkg/errors"
@@ -173,12 +172,7 @@ func decodeKeys(bytes []byte) ([]*rsa.PrivateKey, error) {
 // loadResource loads a resource URL into a byte array.
 func loadResource(resource string) ([]byte, error) {
 
-	parsed, err := url.Parse(resource)
-	if err != nil {
-		return nil, errors.Wrapf(err, "error parsing url from [%s]", resource)
-	}
-
-	bytes, err := urls.ReadFile(parsed)
+	bytes, err := urls.ReadFile(resource)
 	if err != nil {
 		return nil, errors.Wrapf(err, "error reading resource from [%s]", resource)
 	}

@@ -16,7 +16,6 @@ package identities
 
 import (
 	"encoding/json"
-	"fmt"
 	"testing"
 
 	"github.com/greymatter-io/nautls/internal/tests"
@@ -32,14 +31,14 @@ func TestIdentityConfig(t *testing.T) {
 		Convey(".Build is invoked", func() {
 
 			config := &IdentityConfig{
-				Authorities: fmt.Sprintf("file://%s", tests.MustAbsolutePath("testdata/multiple.crt", t)),
-				Certificate: fmt.Sprintf("file://%s", tests.MustAbsolutePath("testdata/single.crt", t)),
-				Key:         fmt.Sprintf("file://%s", tests.MustAbsolutePath("testdata/single.key", t)),
+				Authorities: "./testdata/multiple.crt",
+				Certificate: "./testdata/single.crt",
+				Key:         "./testdata/single.key",
 			}
 
 			Convey("with empty authorities", func() {
 
-				config.Authorities = fmt.Sprintf("file://%s", tests.MustAbsolutePath("testdata/empty.crt", t))
+				config.Authorities = "./testdata/empty.crt"
 				identity, err := config.Build()
 
 				Convey("it should return a non-nil identity", func() {
@@ -53,7 +52,7 @@ func TestIdentityConfig(t *testing.T) {
 
 			Convey("with invalid authorities", func() {
 
-				config.Authorities = fmt.Sprintf("file://%s", tests.MustAbsolutePath("testdata/invalid.crt", t))
+				config.Authorities = "./testdata/invalid.crt"
 				identity, err := config.Build()
 
 				Convey("it should return a nil identity", func() {
@@ -67,7 +66,7 @@ func TestIdentityConfig(t *testing.T) {
 
 			Convey("with an empty certificate", func() {
 
-				config.Certificate = fmt.Sprintf("file://%s", tests.MustAbsolutePath("testdata/empty.crt", t))
+				config.Certificate = "./testdata/empty.crt"
 				identity, err := config.Build()
 
 				Convey("it should return a nil identity", func() {
@@ -81,7 +80,7 @@ func TestIdentityConfig(t *testing.T) {
 
 			Convey("with an invalid certificate", func() {
 
-				config.Certificate = fmt.Sprintf("file://%s", tests.MustAbsolutePath("testdata/invalid.crt", t))
+				config.Certificate = "./testdata/invalid.crt"
 				identity, err := config.Build()
 
 				Convey("it should return a nil identity", func() {
@@ -95,7 +94,7 @@ func TestIdentityConfig(t *testing.T) {
 
 			Convey("with multiple certificates", func() {
 
-				config.Certificate = fmt.Sprintf("file://%s", tests.MustAbsolutePath("testdata/multiple.crt", t))
+				config.Certificate = "./testdata/multiple.crt"
 				identity, err := config.Build()
 
 				Convey("it should return a nil identity", func() {
@@ -109,7 +108,7 @@ func TestIdentityConfig(t *testing.T) {
 
 			Convey("with an empty key", func() {
 
-				config.Key = fmt.Sprintf("file://%s", tests.MustAbsolutePath("testdata/empty.key", t))
+				config.Key = "./testdata/empty.key"
 				identity, err := config.Build()
 
 				Convey("it should return a nil identity", func() {
@@ -123,7 +122,7 @@ func TestIdentityConfig(t *testing.T) {
 
 			Convey("with an invalid key", func() {
 
-				config.Key = fmt.Sprintf("file://%s", tests.MustAbsolutePath("testdata/invalid.key", t))
+				config.Key = "./testdata/invalid.key"
 				identity, err := config.Build()
 
 				Convey("it should return a nil identity", func() {
@@ -137,7 +136,7 @@ func TestIdentityConfig(t *testing.T) {
 
 			Convey("with multiple keys", func() {
 
-				config.Key = fmt.Sprintf("file://%s", tests.MustAbsolutePath("testdata/multiple.key", t))
+				config.Key = "./testdata/multiple.key"
 				identity, err := config.Build()
 
 				Convey("it should return a nil identity", func() {
