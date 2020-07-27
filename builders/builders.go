@@ -17,64 +17,63 @@ package builders
 import (
 	"crypto/tls"
 	"crypto/x509"
-	"net/url"
 
 	"github.com/greymatter-io/nautls/internal/urls"
 	"github.com/pkg/errors"
 )
 
-// BuildCertificatePool provides a utility function for creating a certificate pool from an array of URLs. Note that if
+// BuildCertificatePool provides a utility function for creating a certificate pool from an array of resources. Note that if
 // the array of URLs is empty the system certificates will be used.
-func BuildCertificatePool(certificateURLs []string) (*x509.CertPool, error) {
+func BuildCertificatePool(certificateResources []string) (*x509.CertPool, error) {
 
-	if len(certificateURLs) == 0 {
+	if len(certificateResources) == 0 {
 		return x509.SystemCertPool()
 	}
 
 	pool := x509.NewCertPool()
-	for _, certificate := range certificateURLs {
+	for _, certificateResource := range certificateResources {
 
-		bytes, err := readResource(certificate)
+		bytes, err := readResource(certificateResource)
 		if err != nil {
-			return nil, errors.Wrapf(err, "error reading certificate [%s]", certificate)
+			return nil, errors.Wrapf(err, "error reading certificate [%s]", certificateResource)
 		}
 
 		if !pool.AppendCertsFromPEM(bytes) {
-			return nil, errors.Wrapf(err, "error appending certificate from [%s]", certificate)
+			return nil, errors.Wrapf(err, "error appending certificate from [%s]", certificateResource)
 		}
 	}
 
 	return pool, nil
 }
 
-// BuildCertificates provides a utility function for loading a certificate from certificate and key URLs.
-func BuildCertificates(certificateURL string, keyURL string) ([]tls.Certificate, error) {
+// BuildCertificates provides a utility function for loading a certificate from certificate and key resources.
+func BuildCertificates(certificateResource string, keyResource string) ([]tls.Certificate, error) {
 
 	certificates := []tls.Certificate{}
 
-	if (certificateURL == "") && (keyURL == "") {
+	if (certificateResource == "") && (keyResource == "") {
 		return certificates, nil
 	}
 
-	certificate, err := readKeyPair(certificateURL, keyURL)
+	certificate, err := readKeyPair(certificateResource, keyResource)
 	if err != nil {
-		return nil, errors.Wrapf(err, "error loading key pair from [%s] and [%s]", certificateURL, keyURL)
+		return nil, errors.Wrapf(err, "error loading key pair from [%s] and [%s]", certificateResource, keyResource)
 	}
 
 	return append(certificates, certificate), nil
 }
 
-// readKeyPair reads an X.509 key pair from a certificate and key URL.
-func readKeyPair(certificateURL string, keyURL string) (tls.Certificate, error) {
+// readKeyPair reads an X.509 key pair from certificate and key resources.
+func readKeyPair(certificateResource string, keyResource string) (tls.Certificate, error) {
 
-	certificateBytes, err := readResource(certificateURL)
+	certificateBytes, err := readResource(certificateResource)
 	if err != nil {
-		return tls.Certificate{}, errors.Wrapf(err, "error reading certificate [%s]", certificateURL)
+		return tls.Certificate{}, errors.Wrapf(err, "error reading certificate [%s]", certificateResource)
 	}
 
-	keyBytes, err := readResource(keyURL)
+	keyBytes, err := readResource(keyResource)
 	if err != nil {
-		return tls.Certificate{}, errors.Wrapf(err, "error reading key [%s]", keyURL)
+		return tls.Certificate{}, errors.Wrapf(err, "error reading key [%s]", keyResource)
 	}
 
 	return tls.X509KeyPair(certificateBytes, keyBytes)
@@ -83,14 +82,9 @@ func readKeyPair(certificateURL string, keyURL string) (tls.Certificate, error) 
 // readResource reads a resource URL into a byte array.
 func readResource(resource string) ([]byte, error) {
 
-	resourceURL, err := url.Parse(resource)
+	resourceBytes, err := urls.ReadFile(resource)
 	if err != nil {
-		return nil, errors.Wrapf(err, "error parsing url from [%s]", resource)
-	}
-
-	resourceBytes, err := urls.ReadFile(resourceURL)
-	if err != nil {
-		return nil, errors.Wrapf(err, "error reading resource from [%s]", resourceURL)
+		return nil, errors.Wrapf(err, "error reading resource from [%s]", resource)
 	}
 
 	return resourceBytes, nil
