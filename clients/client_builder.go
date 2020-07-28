@@ -19,6 +19,8 @@ import (
 )
 
 // ClientBuilder provides an builder for http.Client instances.
+//
+// Deprecated: ClientBuilder should no longer be used and implementations should move to ConfigurationBuilder.
 type ClientBuilder struct {
 	config ClientConfig
 }

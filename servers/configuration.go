@@ -1,4 +1,4 @@
-// Copyright 2019 Decipher Technology Studios
+// Copyright 2020 Decipher Technology Studios
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,10 +21,8 @@ import (
 	"github.com/pkg/errors"
 )
 
-// SecurityConfig provides a serializable representation of a tls.Config structure for servers.
-//
-// Deprecated: SecurityConfig should no longer be used and implementations should move to Configuration.
-type SecurityConfig struct {
+// Configuration provides a serializable representation of a tls.Config structure for servers.
+type Configuration struct {
 
 	// Authorities defines the trusted certificate authorities for verifying mTLS clients. The values must be URLs that
 	// point to the location of PEM encoded certificates.
@@ -56,8 +54,13 @@ type SecurityConfig struct {
 	Authentication Authentication `json:"authentication" mapstructure:"authentication" yaml:"authentication"`
 }
 
-// Build creates a tls.Config from the SecurityConfig instance.
-func (c *SecurityConfig) Build() (*tls.Config, error) {
+// TLS returns a tls.Config instance from the configuration. Note that invoking this method on a nil instance is not an
+// error and returns nil.
+func (c *Configuration) TLS() (*tls.Config, error) {
+
+	if c == nil {
+		return nil, nil
+	}
 
 	pool, err := builders.BuildCertificatePool(c.Authorities)
 	if err != nil {

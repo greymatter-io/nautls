@@ -22,6 +22,8 @@ import (
 )
 
 // SecurityConfig provides a serializable representation of a tls.Config structure for clients.
+//
+// Deprecated: SecurityConfig should no longer be used and implementations should move to Configuration.
 type SecurityConfig struct {
 
 	// Authorities defines the trusted certificate authorities. The values must be URLs that point to the location of
