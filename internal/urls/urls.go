@@ -16,7 +16,6 @@ package urls
 
 import (
 	"io/ioutil"
-	"net/url"
 	"os"
 	"path/filepath"
 
@@ -31,7 +30,7 @@ func init() {
 }
 
 // File gets the provided resource to a temporary file on the local machine and returns the path.
-func File(resource *url.URL) (string, error) {
+func File(resource string) (string, error) {
 
 	directory, err := temporary.Directory()
 	if err != nil {
@@ -40,9 +39,9 @@ func File(resource *url.URL) (string, error) {
 
 	destination := filepath.Join(directory, "resource")
 
-	err = getter.GetFile(destination, resource.String())
+	err = getter.GetFile(destination, resource, pwdClientOption)
 	if err != nil {
-		return "", errors.Wrapf(err, "error fetching resource from [%s] to [%s]", resource.String(), destination)
+		return "", errors.Wrapf(err, "error fetching resource from [%s] to [%s]", resource, destination)
 	}
 
 	return destination, nil
@@ -50,7 +49,7 @@ func File(resource *url.URL) (string, error) {
 
 // WithFile gets the provided resource to a temporary file on the local machine, invokes the callback with the path and
 // returns the result.  Note that the temporary file is deleted when the callback returns.
-func WithFile(resource *url.URL, callback func(path string) (interface{}, error)) (interface{}, error) {
+func WithFile(resource string, callback func(path string) (interface{}, error)) (interface{}, error) {
 
 	destination, err := File(resource)
 	if err != nil {
@@ -63,7 +62,7 @@ func WithFile(resource *url.URL, callback func(path string) (interface{}, error)
 }
 
 // ReadFile returns the content of the provided resource as an array of bytes or returns an error.
-func ReadFile(resource *url.URL) ([]byte, error) {
+func ReadFile(resource string) ([]byte, error) {
 
 	bytes, err := WithFile(resource, func(path string) (interface{}, error) {
 		return ioutil.ReadFile(path)
@@ -74,4 +73,15 @@ func ReadFile(resource *url.URL) ([]byte, error) {
 	}
 
 	return bytes.([]byte), nil
+}
+
+// pwdClientOption provides a client option that attempts to set the working directory for relative path resolution.
+func pwdClientOption(c *getter.Client) error {
+
+	directory, err := os.Getwd()
+	if err == nil {
+		c.Pwd = directory
+	}
+
+	return nil
 }

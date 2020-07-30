@@ -16,6 +16,7 @@ package urls
 
 import (
 	"encoding/base64"
+	"fmt"
 	"net/url"
 	"testing"
 
@@ -29,10 +30,27 @@ func TestReadFile(test *testing.T) {
 
 	Convey("When .ReadFile is invoked", test, func() {
 
+		Convey("with no scheme", func() {
+
+			expectedContent := tests.MustGenerateBytes(test)
+			actualContent, err := temporary.WithFile(expectedContent, 0777, func(path string) (interface{}, error) {
+				resource := tests.MustRelativePath(path, test)
+				return ReadFile(resource)
+			})
+
+			Convey("it returns the content", func() {
+				So(actualContent, ShouldResemble, expectedContent)
+			})
+
+			Convey("it returns a nil error", func() {
+				So(err, ShouldBeNil)
+			})
+		})
+
 		Convey("with a base64 scheme", func() {
 
 			expectedContent := tests.MustGenerateBytes(test)
-			resource, err := url.Parse("base64:///" + url.PathEscape(base64.StdEncoding.EncodeToString(expectedContent)))
+			resource := fmt.Sprintf("base64:///%s", url.PathEscape(base64.StdEncoding.EncodeToString(expectedContent)))
 			actualContent, err := ReadFile(resource)
 
 			Convey("it returns the content", func() {
@@ -48,7 +66,7 @@ func TestReadFile(test *testing.T) {
 
 			expectedContent := tests.MustGenerateBytes(test)
 			actualContent, err := temporary.WithFile(expectedContent, 0777, func(path string) (interface{}, error) {
-				resource, _ := url.Parse("file://" + path)
+				resource := fmt.Sprintf("file://%s", path)
 				return ReadFile(resource)
 			})
 

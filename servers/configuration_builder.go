@@ -1,4 +1,4 @@
-// Copyright 2019 Decipher Technology Studios
+// Copyright 2020 Decipher Technology Studios
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,23 +14,24 @@
 
 package servers
 
-import "crypto/tls"
-
-// SecurityBuilder provides an builder for server tls.Config instances.
-//
-// Deprecated: SecurityBuilder should no longer be used and implementations should move to ConfigurationBuilder.
-type SecurityBuilder struct {
-	config SecurityConfig
+// ConfigurationBuilder provides an builder for server tls.Config instances.
+type ConfigurationBuilder struct {
+	Configuration
 }
 
-// NewSecurityBuilder returns a new instance of the SecurityBuilder structure.
-func NewSecurityBuilder() *SecurityBuilder {
-	return &SecurityBuilder{}
+// NewConfigurationBuilder returns a new instance of the ConfigurationBuilder structure.
+func NewConfigurationBuilder() *ConfigurationBuilder {
+	return &ConfigurationBuilder{}
 }
 
-// Build creates a tls.Config from the SecurityBuilder.
-func (b *SecurityBuilder) Build() (*tls.Config, error) {
-	return b.config.Build()
+// Build returns a Configuration for the current state of the builder.
+func (b *ConfigurationBuilder) Build() *Configuration {
+	return &Configuration{
+		Authorities:    b.Authorities,
+		Certificate:    b.Certificate,
+		Key:            b.Key,
+		Authentication: b.Authentication,
+	}
 }
 
 // WithAuthorities sets the trusted certificate authorities for verifying mTLS clients. The values must be URLs that
@@ -39,8 +40,8 @@ func (b *SecurityBuilder) Build() (*tls.Config, error) {
 // Note that in addition to those schemes supported by [getter](https://godoc.org/github.com/hashicorp/go-getter) a
 // "base64" scheme is supported for providing the PEM encoded certifiate in the path of the URL directly. This is most
 // applicable when the certificate data must be provided via an environement variable.
-func (b *SecurityBuilder) WithAuthorities(authorities []string) *SecurityBuilder {
-	b.config.Authorities = authorities
+func (b *ConfigurationBuilder) WithAuthorities(authorities []string) *ConfigurationBuilder {
+	b.Authorities = authorities
 	return b
 }
 
@@ -50,8 +51,8 @@ func (b *SecurityBuilder) WithAuthorities(authorities []string) *SecurityBuilder
 // Note that in addition to those schemes supported by [getter](https://godoc.org/github.com/hashicorp/go-getter) a
 // "base64" scheme is supported for providing the PEM encoded certifiate in the path of the URL directly. This is most
 // applicable when the certificate data must be provided via an environement variable.
-func (b *SecurityBuilder) WithCertificate(certificate string) *SecurityBuilder {
-	b.config.Certificate = certificate
+func (b *ConfigurationBuilder) WithCertificate(certificate string) *ConfigurationBuilder {
+	b.Certificate = certificate
 	return b
 }
 
@@ -60,13 +61,13 @@ func (b *SecurityBuilder) WithCertificate(certificate string) *SecurityBuilder {
 // Note that in addition to those schemes supported by [getter](https://godoc.org/github.com/hashicorp/go-getter) a
 // "base64" scheme is supported for providing the PEM encoded certifiate in the path of the URL directly. This is most
 // applicable when the certificate data must be provided via an environement variable.
-func (b *SecurityBuilder) WithKey(key string) *SecurityBuilder {
-	b.config.Key = key
+func (b *ConfigurationBuilder) WithKey(key string) *ConfigurationBuilder {
+	b.Key = key
 	return b
 }
 
 // WithAuthentication sets the client authentication mode for mTLS connections.
-func (b *SecurityBuilder) WithAuthentication(authentication Authentication) *SecurityBuilder {
-	b.config.Authentication = authentication
+func (b *ConfigurationBuilder) WithAuthentication(authentication Authentication) *ConfigurationBuilder {
+	b.Authentication = authentication
 	return b
 }
