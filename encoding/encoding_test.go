@@ -1,4 +1,4 @@
-// Copyright 2019 Decipher Technology Studios
+// Copyright 2020 Decipher Technology Studios
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/deciphernow/nautls/identities"
+	"github.com/greymatter-io/nautls/identities"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
